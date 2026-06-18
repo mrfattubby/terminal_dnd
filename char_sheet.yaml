@@ -1,5 +1,6 @@
 ---
-Character:
+section: Character
+dict:
   Name: "Geoffrey of the Undergrowth"
   Level: 5
   Class: Druid
