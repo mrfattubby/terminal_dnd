@@ -1,0 +1,23 @@
+---
+Character:
+  Name: "Geoffrey of the Undergrowth"
+  Level: 5
+  Class: Druid
+  Subclass: Circle of the Moon
+  Background: Farmer
+  Species: Elf
+  Subspecies: Wood Elf
+  Alignment: Neutral Good
+  Size: Medium
+  Speed: 35
+  Proficiency Bonus: 3
+  Attributes:
+    Strength: 8
+    Dexterity: 10
+    Constitution: 14
+    Intelligence: 10
+    Wisdom: 16
+    Charisma: 12
+  Skills:
+
+---
