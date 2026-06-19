@@ -22,6 +22,10 @@ dict:
     WIS: "20\t(+6)"
     CHA: "13\t(+1)"
   Skills: "" # TODO: add
+  HP:
+    Maximum: 61
+    Current: 29
+    Temporary: 0
   Spells:
     - Starry Wisp
     - Cure Wounds

@@ -6,7 +6,7 @@ LINE_SEP = 80 * "*"
 
 # TODO: Split spells into a separate module
 class Spell():
-    def __init__(self, name: str, level: int, cast_time: str, range: str, duration: str, components: str, description: str, prepared: bool = True, concentration: bool = False, ritual: bool = False, free_casts: int = 0, wild_shape: bool = False):
+    def __init__(self, name: str, level: int, cast_time: str, range: str, duration: str, components: str, description: str, prepared: bool = True, concentration: bool = False, ritual: bool = False, free_casts: int = 0, wild_shape: bool = False) -> None:
         # TODO: Finish setting up later
         pass
 
@@ -27,6 +27,9 @@ class Character():
         self.speed = config["Speed"]
         self.prof_bonus = config["Proficiency Bonus"]
         self.attributes = config["Attributes"]
+        self.max_hp = config["HP"]["Maximum"]
+        self.current_hp = config["HP"]["Current"]
+        self.temp_hp = config["HP"]["Temporary"]
         self.spells = config["Spells"]  # TODO: Convert spell names into Spell objects
 
 
@@ -40,24 +43,27 @@ class State():
         self.commands = {}
 
     def show_entry(self) -> None:
-        pass
+        print(f"{self.name.title()} Screen")
 
     def show_help(self, all_states: list) -> None:
-        print(f"Current state: {self.name.title()}")
+        print(LINE_SEP)
+        print(f"{self.name.title()} Screen\n")
 
         print("Commands:")
         for command in self.commands.keys():
-            print(f"\t{command}\t{self.commands[command]['name'].title()}")
+            print(f"\t{command}\t{self.commands[command]['name']}")
 
-        print("Available states:")
+        print()
         for state in all_states:
             if state.name in self.allowed_states:
-                print(f"\t{state.entry_command}\t{state.name.title()}")
+                print(f"\t{state.entry_command}\t{state.name.title()} Screen")
+
         print("\tEXI\tExit terminal")
+        print(LINE_SEP)
 
 
 class Main_State(State):
-    def __init__(self, char: Character, name: str, entry_command: str, allowed_states: list[str], help_message: str):
+    def __init__(self, char: Character, name: str, entry_command: str, allowed_states: list[str], help_message: str) -> None:
         super().__init__(char, name, entry_command, allowed_states, help_message)
         self.commands = {"ACC": {"func": self.show_ac, "name": "Show AC"}, "MOV": {"func": self.show_movement, "name": "Show Movement Speed"}}  # TODO: Extend
 
@@ -79,20 +85,16 @@ class Main_State(State):
         print(f"WIS:\t\t{self.char.attributes['WIS']}")
         print(f"CHA:\t\t{self.char.attributes['CHA']}")
         print(LINE_SEP)
-        print(f"AC:\t\t{self.char.ac}")
-        print(f"Initiative:\t{self.char.initiative}")
-        print(f"Speed:\t\t{self.char.speed}")
-        print(LINE_SEP)
 
-    def show_ac(self):
+    def show_ac(self) -> None:
         print(f"AC = {self.char.ac}")
 
-    def show_movement(self):
+    def show_movement(self) -> None:
         print(f"Speed = {self.char.speed}")
 
 
 class Spells_State(State):
-    def __init__(self, char: Character, name: str, entry_command: str, allowed_states: list[str], help_message: str):
+    def __init__(self, char: Character, name: str, entry_command: str, allowed_states: list[str], help_message: str) -> None:
         super().__init__(char, name, entry_command, allowed_states, help_message)
         self.commands = {"LIS": {"func": self.show_spells, "name": "List Spells"}, "SLO": {"func": self.show_slots, "name": "Show Spell Slots"}, "CAS": {"func": self.cast_spell, "name": "Cast Spell"}}
 
@@ -113,6 +115,32 @@ class Spells_State(State):
         # TODO: Implement
         # Want the input for this to be e.g. "CAS 2" to cast a level 2 spell
         # May want to put catches in here for specific spells e.g. free casts, ritual, etc.
+        pass
+
+
+class Combat_State(State):
+    # TODO: Add. E.g. HP, "quick" attacks like on char sheet.
+    def __init__(self, char: Character, name: str, entry_command: str, allowed_states: list[str], help_message: str) -> None:
+        super().__init__(char, name, entry_command, allowed_states, help_message)
+        self.commands = {"HIT": {"func": self.modify_hp, "name": "Modify HP"}}
+
+    def show_entry(self) -> None:
+        super().show_entry()
+        print(LINE_SEP)
+        print(f"AC:\t\t{self.char.ac}")
+        print(f"Initiative:\t{self.char.initiative}")
+        print(f"Speed:\t\t{self.char.speed}")
+        print(LINE_SEP)
+        print("Hit Points")
+        print(f"Maximum HP\t{self.char.max_hp}")
+        print(f"Current HP:\t{self.char.current_hp}")
+        print(f"Temporary HP\t{self.char.temp_hp}")
+        print(LINE_SEP)
+
+    def show_help(self, all_states) -> None:
+        super().show_help(all_states)
+
+    def modify_hp(self):
         pass
 
 
@@ -159,19 +187,20 @@ def transition_states(allowed_states: list[State], usr_input: str, current_state
 
 def main() -> None:
     my_char = Character(yaml_read("char_sheet.yaml", "Character"))
-    states = {"main": Main_State(char=my_char, name="main", entry_command="MAI", allowed_states=["spells"], help_message=""),
-              "spells": Spells_State(char=my_char, name="spells", entry_command="SPE", allowed_states=["main"], help_message="")}
+    states = [Main_State(char=my_char, name="main", entry_command="MAI", allowed_states=["spells", "combat"], help_message=""),
+              Spells_State(char=my_char, name="spells", entry_command="SPE", allowed_states=["main", "combat"], help_message=""),
+              Combat_State(char=my_char, name="combat", entry_command="COM", allowed_states=["main", "spells"], help_message="")]
 
     # Mainloop
     usr_input = ""
-    state = states["main"]
+    state = states[0]
     state.show_entry()
     while usr_input != "EXI":
         usr_input = trim_input(input(">>>"))
         if usr_input == "HEL":
             # The user needs help!
-            state.show_help(states.values())
-        state = transition_states(allowed_states=[states[name] for name in states.keys() if name in state.allowed_states],
+            state.show_help(states)
+        state = transition_states(allowed_states=[x for x in states if x.name in state.allowed_states],
                                   usr_input=usr_input,
                                   current_state=state)
         if usr_input in state.commands.keys():
