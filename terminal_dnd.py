@@ -30,6 +30,7 @@ class Character():
         self.max_hp = config["HP"]["Maximum"]
         self.current_hp = config["HP"]["Current"]
         self.temp_hp = config["HP"]["Temporary"]
+        self.attacks = config["Attacks"]
         self.spells = config["Spells"]  # TODO: Convert spell names into Spell objects
 
 
@@ -132,9 +133,14 @@ class Combat_State(State):
         print(f"Speed:\t\t{self.char.speed}")
         print(LINE_SEP)
         print("Hit Points")
-        print(f"Maximum HP\t{self.char.max_hp}")
+        print(f"Maximum HP:\t{self.char.max_hp}")
         print(f"Current HP:\t{self.char.current_hp}")
-        print(f"Temporary HP\t{self.char.temp_hp}")
+        print(f"Temporary HP:\t{self.char.temp_hp}")
+        print(LINE_SEP)
+        print("Quick Attack Reference")
+        print("Name\t\tAtt.\tDamage\t\tRange\tNotes")
+        for attack in self.char.attacks:
+            print(f"{attack['name']:<15}\t{attack['att']:<7}\t{attack['dam']:<15}\t{attack['range']:<7}\t{attack['notes']}")
         print(LINE_SEP)
 
     def show_help(self, all_states) -> None:

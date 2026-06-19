@@ -26,6 +26,16 @@ dict:
     Maximum: 61
     Current: 29
     Temporary: 0
+  Attacks: [
+    {name: Sickle, att: "+2", dam: "1d4-1 Sla", range: "Melee", notes: ""},
+    {name: Quarterstaff, att: "+4", dam: "1d6(1d8)+1 Blu", range: "Melee", notes: ""},
+    {name: Shillelagh, att: "+10", dam: "1d10+7 Blu/For", range: "Melee", notes: ""},
+    {name: Thorn Whip, att: "+8", dam: "2d6 Pie", range: "30 ft", notes: "Melee spell attack. On hit pull Large or smaller creature up to 10 ft closer"},
+    {name: Cure Wounds, att: "", dam: "2d8+5", range: "Touch", notes: "Upcast: +2d8 HP per spell slot level above 1"},
+    {name: Starry Wisp, att: "+8", dam: "2d8 Rad", range: "60 ft", notes: "Ranged spell attack. On hit target emits Dim Light until next turn"},
+    {name: Ice Knife, att: "+8", dam: "1d10 Pie", range: "60 ft", notes: "Ranged spell attack. Hit/miss, Dex save all creatures within 5 ft: 2d6 Col on fail"}
+  ]
+
   Spells:
     - Starry Wisp
     - Cure Wounds
