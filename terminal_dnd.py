@@ -1,11 +1,10 @@
 from yaml import safe_load_all, YAMLError
 
-
-class State():
-    def __init__(self, name: str, command: str, allowed_states: list[str]) -> None:
-        self.name = name
-        self.command = command
-        self.allowed_states = allowed_states
+# TODO: Split spells into a separate module
+class Spell():
+    def __init__(self, name: str, level: int, cast_time: str, range: str, duration: str, components: str, description: str, prepared: bool=True, concentration: bool=False, ritual: bool=False, free_casts: int=0, wild_shape: bool=False):
+        # TODO: Finish setting up later
+        pass
 
 
 class Character():
@@ -20,8 +19,70 @@ class Character():
         self.alignment = config["Alignment"]
         self.size = config["Size"]
         self.speed = config["Speed"]
+        self.ac = config["AC"]
         self.prof_bonus = config["Proficiency Bonus"]
         self.attributes = config["Attributes"]
+        self.spells = config["Spells"]  # TODO: Convert spell names into Spell objects
+
+
+class State():
+    def __init__(self, char: Character, name: str, entry_command: str, allowed_states: list[str], help_message: str) -> None:
+        self.char = char
+        self.name = name
+        self.entry_command = entry_command
+        self.allowed_states = allowed_states
+        self.help_message = help_message
+        self.commands = {}
+
+    def show_help(self, all_states: list) -> None:
+        print(f"Current state: {self.name.title()}")
+
+        print("Commands:")
+        for command in self.commands.keys():
+            print(f"\t{command}\t{self.commands[command]["name"].title()}")
+
+        print("Available states:")
+        for state in all_states:
+            if state.name in self.allowed_states:
+                print(f"\t{state.entry_command}\t{state.name.title()}")
+        print("\tEXI\tExit terminal")
+
+
+class Main_State(State):
+    def __init__(self, char: Character, name: str, entry_command: str, allowed_states: list[str], help_message: str):
+        super().__init__(char, name, entry_command, allowed_states, help_message)
+        self.commands = {"ACC": {"func": self.show_ac, "name": "Show AC"}, "MOV": {"func": self.show_movement, "name": "Show Movement Speed"}}  # TODO: Extend
+    
+    def show_ac(self):
+        print(f"AC = {self.char.ac}")
+    
+    def show_movement(self):
+        print(f"Speed = {self.char.speed}")
+
+
+class Spells_State(State):
+    def __init__(self, char: Character, name: str, entry_command: str, allowed_states: list[str], help_message: str):
+        super().__init__(char, name, entry_command, allowed_states, help_message)
+        self.commands = {"LIS": {"func": self.show_spells, "name": "List Spells"}, "SLO": {"func": self.show_slots, "name": "Show Spell Slots"}, "CAS": {"func": self.cast_spell, "name": "Cast Spell"}}
+    
+    def show_help(self, all_states) -> None:
+        super().show_help(all_states)
+
+    def show_spells(self) -> None:
+        print("All spells:")
+        # TODO: Flesh this out for Spell objects
+        for spell in self.char.spells:
+            print(f"\t{spell}")
+    
+    def show_slots(self) -> None:
+        # TODO: Implement
+        pass
+
+    def cast_spell(self) -> None:
+        # TODO: Implement
+        # Want the input for this to be e.g. "CAS 2" to cast a level 2 spell
+        # May want to put catches in here for specific spells e.g. free casts, ritual, etc.
+        pass
 
 
 def yaml_read(yaml_file: str, section: str) -> dict:
@@ -58,7 +119,8 @@ def transition_states(allowed_states: list[State], usr_input: str, current_state
         State: the new state to transition to, or our current state if the user input doesn't match any of our allowed commands
     """
     for state in allowed_states:
-        if usr_input == state.command:
+        if usr_input == state.entry_command:
+            print(f"Current state: {state.name.title()}")
             return state
     # Return the current state if the user input doesn't match an allowed transition command
     return current_state
@@ -66,18 +128,22 @@ def transition_states(allowed_states: list[State], usr_input: str, current_state
 
 def main() -> None:
     my_char = Character(yaml_read("char_sheet.yaml", "Character"))
-    states = {"main": State("main", "BAC", ["spells"]),
-              "spells": State("spells", "SPE", ["main"])}
+    states = {"main": Main_State(char=my_char, name="main", entry_command="MAI", allowed_states=["spells"], help_message=""),
+              "spells": Spells_State(char=my_char, name="spells", entry_command="SPE", allowed_states=["main"], help_message="")}
 
     # Mainloop
     usr_input = ""
     state = states["main"]
     while usr_input != "EXI":
         usr_input = trim_input(input(">>>"))
+        if usr_input == "HEL":
+            # The user needs help!
+            state.show_help(states.values())
         state = transition_states(allowed_states=[states[name] for name in states.keys() if name in state.allowed_states],
                                   usr_input=usr_input,
                                   current_state=state)
-        print(state.name)
+        if usr_input in state.commands.keys():
+            state.commands[usr_input]["func"]()
 
 
 if __name__ == "__main__":

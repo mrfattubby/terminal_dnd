@@ -1,7 +1,7 @@
 ---
 section: Character
 dict:
-  Name: "Geoffrey of the Undergrowth"
+  Name: Geoffrey of the Undergrowth
   Level: 5
   Class: Druid
   Subclass: Circle of the Moon
@@ -10,7 +10,8 @@ dict:
   Subspecies: Wood Elf
   Alignment: Neutral Good
   Size: Medium
-  Speed: 35
+  Speed: 35 ft
+  AC: "Normal: 16; Wild shape: Beast's or 18, whichever is greater"
   Proficiency Bonus: 3
   Attributes:
     Strength: 8
@@ -19,6 +20,9 @@ dict:
     Intelligence: 10
     Wisdom: 16
     Charisma: 12
-  Skills:
-
+  Skills: "" # TODO: add
+  Spells:
+    - Starry Wisp
+    - Cure Wounds
+    - Moon Beam
 ---
