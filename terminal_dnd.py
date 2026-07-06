@@ -47,7 +47,7 @@ class State():
         self.entry_command = entry_command
         self.allowed_states = allowed_states
         self.help_message = help_message
-        self.commands = {}
+        self.commands = {"REL": {"func": self.reload_char, "name": "Reload Character"}}
 
     def show_entry(self) -> None:
         print(LINE_SEP)
@@ -69,13 +69,16 @@ class State():
         print("\tEXI\tExit terminal")
         print(LINE_SEP)
 
+    def reload_char(self) -> None:
+        self.char.load_char(yaml_read(CONFIG_PATH, CONFIG_CHARACTER_SECTION))
+        print(f'Reloaded character from "{CONFIG_PATH}"')
+        self.show_entry()
 
 class Main_State(State):
     def __init__(self, char: Character, name: str, entry_command: str, allowed_states: list[str], help_message: str) -> None:
         super().__init__(char, name, entry_command, allowed_states, help_message)
-        self.commands = {"ACC": {"func": self.show_ac, "name": "Show AC"},
-                         "MOV": {"func": self.show_movement, "name": "Show Movement Speed"},
-                         "REL": {"func": self.reload_char, "name": "Reload Character"}}  # TODO: Extend
+        self.commands.update({"ACC": {"func": self.show_ac, "name": "Show AC"},
+                              "MOV": {"func": self.show_movement, "name": "Show Movement Speed"}})  # TODO: Extend
 
     def show_entry(self) -> None:
         super().show_entry()
@@ -102,16 +105,13 @@ class Main_State(State):
     def show_movement(self) -> None:
         print(f"Speed = {self.char.speed}")
 
-    def reload_char(self) -> None:
-        self.char.load_char(yaml_read(CONFIG_PATH, CONFIG_CHARACTER_SECTION))
-        print(f'Reloaded character from "{CONFIG_PATH}"')
-        self.show_entry()
-
 
 class Spells_State(State):
     def __init__(self, char: Character, name: str, entry_command: str, allowed_states: list[str], help_message: str) -> None:
         super().__init__(char, name, entry_command, allowed_states, help_message)
-        self.commands = {"LIS": {"func": self.show_spells, "name": "List Spells"}, "SLO": {"func": self.show_slots, "name": "Show Spell Slots"}, "CAS": {"func": self.cast_spell, "name": "Cast Spell"}}
+        self.commands.update({"LIS": {"func": self.show_spells, "name": "List Spells"},
+                              "SLO": {"func": self.show_slots, "name": "Show Spell Slots"},
+                              "CAS": {"func": self.cast_spell, "name": "Cast Spell"}})
 
     def show_help(self, all_states) -> None:
         super().show_help(all_states)
@@ -137,7 +137,7 @@ class Combat_State(State):
     # TODO: Add. E.g. HP, "quick" attacks like on char sheet.
     def __init__(self, char: Character, name: str, entry_command: str, allowed_states: list[str], help_message: str) -> None:
         super().__init__(char, name, entry_command, allowed_states, help_message)
-        self.commands = {"HIT": {"func": self.modify_hp, "name": "Modify HP"}}
+        self.commands.update({"HIT": {"func": self.modify_hp, "name": "Modify HP"}})
 
     def show_entry(self) -> None:
         super().show_entry()
