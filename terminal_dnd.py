@@ -2,6 +2,8 @@ from yaml import safe_load_all, YAMLError
 
 
 LINE_SEP = 80 * "*"
+CONFIG_CHARACTER_SECTION = "Character"
+CONFIG_PATH = "char_sheet.yaml"
 
 
 # TODO: Split spells into a separate module
@@ -13,6 +15,9 @@ class Spell():
 
 class Character():
     def __init__(self, config: dict) -> None:
+        self.load_char(config)
+
+    def load_char(self, config: dict) -> None:
         self.name = config["Name"]
         self.level = config["Level"]
         self.char_class = config["Class"]  # Can't use .class since class is a restricted Python expression
@@ -44,6 +49,7 @@ class State():
         self.commands = {}
 
     def show_entry(self) -> None:
+        print(LINE_SEP)
         print(f"{self.name.title()} Screen")
 
     def show_help(self, all_states: list) -> None:
@@ -66,7 +72,9 @@ class State():
 class Main_State(State):
     def __init__(self, char: Character, name: str, entry_command: str, allowed_states: list[str], help_message: str) -> None:
         super().__init__(char, name, entry_command, allowed_states, help_message)
-        self.commands = {"ACC": {"func": self.show_ac, "name": "Show AC"}, "MOV": {"func": self.show_movement, "name": "Show Movement Speed"}}  # TODO: Extend
+        self.commands = {"ACC": {"func": self.show_ac, "name": "Show AC"},
+                         "MOV": {"func": self.show_movement, "name": "Show Movement Speed"},
+                         "REL": {"func": self.reload_char, "name": "Reload Character"}}  # TODO: Extend
 
     def show_entry(self) -> None:
         super().show_entry()
@@ -92,6 +100,11 @@ class Main_State(State):
 
     def show_movement(self) -> None:
         print(f"Speed = {self.char.speed}")
+
+    def reload_char(self) -> None:
+        self.char.load_char(yaml_read(CONFIG_PATH, CONFIG_CHARACTER_SECTION))
+        print(f'Reloaded character from "{CONFIG_PATH}"')
+        self.show_entry()
 
 
 class Spells_State(State):
@@ -140,7 +153,7 @@ class Combat_State(State):
         print("Quick Attack Reference")
         print("Name\t\tAtt.\tDamage\t\tRange\tNotes")
         for attack in self.char.attacks:
-            print(f"{attack['name']:<15}\t{attack['att']:<7}\t{attack['dam']:<15}\t{attack['range']:<7}\t{attack['notes']}")
+            print(f"{attack['name']:<15}\t{attack['att']:<7}\t{attack['dam']:<15}\t{attack['range']:<7}\t{attack['notes']}")  # TODO: Fix Notes wrapping onto new line at start of line: keep wrapping in line with Notes column
         print(LINE_SEP)
 
     def show_help(self, all_states) -> None:
@@ -192,7 +205,7 @@ def transition_states(allowed_states: list[State], usr_input: str, current_state
 
 
 def main() -> None:
-    my_char = Character(yaml_read("char_sheet.yaml", "Character"))
+    my_char = Character(yaml_read(CONFIG_PATH, CONFIG_CHARACTER_SECTION))
     states = [Main_State(char=my_char, name="main", entry_command="MAI", allowed_states=["spells", "combat"], help_message=""),
               Spells_State(char=my_char, name="spells", entry_command="SPE", allowed_states=["main", "combat"], help_message=""),
               Combat_State(char=my_char, name="combat", entry_command="COM", allowed_states=["main", "spells"], help_message="")]
