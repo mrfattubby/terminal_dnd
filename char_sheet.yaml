@@ -37,7 +37,10 @@ dict:
     {name: Starry Wisp, att: "+8", dam: "2d8 Rad", range: "60 ft", notes: "Ranged spell attack. On hit target emits Dim Light until next turn"},
     {name: Ice Knife, att: "+8", dam: "1d10 Pie", range: "60 ft", notes: "Ranged spell attack. Hit/miss, Dex save all creatures within 5 ft: 2d6 Col on fail"}
   ]
-
+  Spell Slots:
+    Level 1: "0/4"  # Used/Total
+    Level 2: "0/3"
+    Level 3: "0/2"
   Spells:
     - Starry Wisp
     - Cure Wounds

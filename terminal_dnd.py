@@ -4,7 +4,8 @@ from yaml import safe_load_all, YAMLError
 LINE_SEP = 80 * "*"
 CONFIG_CHARACTER_SECTION = "Character"
 CONFIG_PATH = "char_sheet.yaml"
-
+EMPTY_CIRCLE = "\u25ef"
+FILLED_CIRCLE = "\u2b24"
 
 # TODO: Split spells into a separate module
 class Spell():
@@ -37,6 +38,7 @@ class Character():
         self.temp_hp = config["HP"]["Temporary"]
         self.death_saves = config["HP"]["Death Saves"]
         self.attacks = config["Attacks"]
+        self.spell_slots = config["Spell Slots"]
         self.spells = config["Spells"]  # TODO: Convert spell names into Spell objects
 
 
@@ -110,8 +112,16 @@ class Spells_State(State):
     def __init__(self, char: Character, name: str, entry_command: str, allowed_states: list[str], help_message: str) -> None:
         super().__init__(char, name, entry_command, allowed_states, help_message)
         self.commands.update({"LIS": {"func": self.show_spells, "name": "List Spells"},
-                              "SLO": {"func": self.show_slots, "name": "Show Spell Slots"},
                               "CAS": {"func": self.cast_spell, "name": "Cast Spell"}})
+
+    def show_entry(self) -> None:
+        super().show_entry()
+        print(LINE_SEP)
+        print("Spell Slots:")
+        for level, slots in self.char.spell_slots.items():
+            used, total = [int(x) for x in slots.split("/")]
+            print(f"{level}:\t{used * FILLED_CIRCLE}{(total - used) * EMPTY_CIRCLE}")
+        print(LINE_SEP)
 
     def show_help(self, all_states) -> None:
         super().show_help(all_states)
@@ -121,10 +131,6 @@ class Spells_State(State):
         # TODO: Flesh this out for Spell objects
         for spell in self.char.spells:
             print(f"\t{spell}")
-
-    def show_slots(self) -> None:
-        # TODO: Implement
-        pass
 
     def cast_spell(self) -> None:
         # TODO: Implement
@@ -153,8 +159,8 @@ class Combat_State(State):
         print(LINE_SEP)
         print("Death Saves")
         num_successes, num_failures = [int(x) for x in self.char.death_saves.split("/")]
-        print(f"Successes:\t{num_successes * "\u2b24"}{(3 - num_successes) * "\u25ef"}")
-        print(f"Failures:\t{num_failures * "\u2b24"}{(3 - num_failures) * "\u25ef"}")
+        print(f"Successes:\t{num_successes * FILLED_CIRCLE}{(3 - num_successes) * EMPTY_CIRCLE}")
+        print(f"Failures:\t{num_failures * FILLED_CIRCLE}{(3 - num_failures) * EMPTY_CIRCLE}")
         print(LINE_SEP)
         print("Quick Attack Reference")
         print("Name\t\tAtt.\tDamage\t\tRange\tNotes")
