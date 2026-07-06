@@ -21,11 +21,13 @@ dict:
     INT: "14\t(+2)"
     WIS: "20\t(+6)"
     CHA: "13\t(+1)"
-  Skills: "" # TODO: add
+  Saving Throws: ""  # TODO: add
+  Skills: ""  # TODO: add
   HP:
     Maximum: 61
     Current: 29
     Temporary: 0
+    Death Saves: "0/0"  # Successes/Failures
   Attacks: [
     {name: Sickle, att: "+2", dam: "1d4-1 Sla", range: "Melee", notes: ""},
     {name: Quarterstaff, att: "+4", dam: "1d6(1d8)+1 Blu", range: "Melee", notes: ""},

@@ -35,6 +35,7 @@ class Character():
         self.max_hp = config["HP"]["Maximum"]
         self.current_hp = config["HP"]["Current"]
         self.temp_hp = config["HP"]["Temporary"]
+        self.death_saves = config["HP"]["Death Saves"]
         self.attacks = config["Attacks"]
         self.spells = config["Spells"]  # TODO: Convert spell names into Spell objects
 
@@ -149,6 +150,11 @@ class Combat_State(State):
         print(f"Maximum HP:\t{self.char.max_hp}")
         print(f"Current HP:\t{self.char.current_hp}")
         print(f"Temporary HP:\t{self.char.temp_hp}")
+        print(LINE_SEP)
+        print("Death Saves")
+        num_successes, num_failures = [int(x) for x in self.char.death_saves.split("/")]
+        print(f"Successes:\t{num_successes * "\u2b24"}{(3 - num_successes) * "\u25ef"}")
+        print(f"Failures:\t{num_failures * "\u2b24"}{(3 - num_failures) * "\u25ef"}")
         print(LINE_SEP)
         print("Quick Attack Reference")
         print("Name\t\tAtt.\tDamage\t\tRange\tNotes")
