@@ -1,8 +1,7 @@
-from yaml import safe_load_all, YAMLError
+from yaml import safe_load, safe_dump, YAMLError
 
 
 LINE_SEP = 80 * "*"
-CONFIG_CHARACTER_SECTION = "Character"
 CONFIG_PATH = "char_sheet.yaml"
 EMPTY_CIRCLE = "\u25ef"
 FILLED_CIRCLE = "\u2b24"
@@ -33,9 +32,9 @@ class Character():
         self.speed = config["Speed"]
         self.prof_bonus = config["Proficiency Bonus"]
         self.attributes = config["Attributes"]
-        self.max_hp = config["HP"]["Maximum"]
-        self.current_hp = config["HP"]["Current"]
-        self.temp_hp = config["HP"]["Temporary"]
+        self.max_hp = config["HP"]["Maximum HP"]
+        self.current_hp = config["HP"]["Current HP"]
+        self.temp_hp = config["HP"]["Temporary HP"]
         self.death_saves = config["HP"]["Death Saves"]
         self.attacks = config["Attacks"]
         self.spell_slots = config["Spell Slots"]
@@ -72,7 +71,7 @@ class State():
         print(LINE_SEP)
 
     def reload_char(self) -> None:
-        self.char.load_char(yaml_read(CONFIG_PATH, CONFIG_CHARACTER_SECTION))
+        self.char.load_char(yaml_read(CONFIG_PATH))
         print(f'Reloaded character from "{CONFIG_PATH}"')
         self.show_entry()
 
@@ -175,23 +174,37 @@ class Combat_State(State):
         pass
 
 
-def yaml_read(yaml_file: str, section: str) -> dict:
+def yaml_read(yaml_file: str) -> dict:
     """Safely read data from a .yaml file.
 
     Args:
         yaml_file (str): path to .yaml file
-        section (str): section heading of .yaml file to read data of
 
     Returns:
         dict: .yaml file data
     """
     with open(yaml_file, "r") as stream:
         try:
-            for data in safe_load_all(stream):
-                if "section" in data and data["section"] == section:
-                    return data["dict"]
+            return safe_load(stream)
         except YAMLError as e:
             raise SystemError(f"Error reading yaml file {e}")
+
+
+def yaml_write(yaml_file: str, label: str, value: str | int) -> None:
+    new_lines = []
+    with open(yaml_file, "r") as stream:
+        lines = stream.readlines()
+        for i in range(len(lines)):
+            try:
+                if label in lines[i].split(":")[0]:  # Use in (not ==) due to indentation in yaml file
+                    lines[i] = ":".join([lines[i].split(":")[0], f' "{value}"\n'])  # Use .join to preserve indentation
+            except IndexError:
+                # Line doesn't have a label, skip
+                continue
+        new_lines = lines
+    
+    with open(yaml_file, "w") as stream:
+        stream.writelines(new_lines)
 
 
 def trim_input(usr_input: str) -> str:
@@ -217,7 +230,7 @@ def transition_states(allowed_states: list[State], usr_input: str, current_state
 
 
 def main() -> None:
-    my_char = Character(yaml_read(CONFIG_PATH, CONFIG_CHARACTER_SECTION))
+    my_char = Character(yaml_read(CONFIG_PATH))
     states = [Main_State(char=my_char, name="main", entry_command="MAI", allowed_states=["spells", "combat"], help_message=""),
               Spells_State(char=my_char, name="spells", entry_command="SPE", allowed_states=["main", "combat"], help_message=""),
               Combat_State(char=my_char, name="combat", entry_command="COM", allowed_states=["main", "spells"], help_message="")]

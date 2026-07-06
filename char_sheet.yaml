@@ -1,48 +1,46 @@
 ---
-section: Character
-dict:
-  Name: Geoffrey of the Undergrowth
-  Level: 5
-  Class: Druid
-  Subclass: Circle of the Moon
-  Background: Farmer
-  Species: Elf
-  Subspecies: Wood Elf
-  Alignment: Lawful Neutral
-  Size: Medium
-  AC: "16 (WS: greater of beast's or 18)"
-  Initiative: "+2"
-  Speed: 35 ft
-  Proficiency Bonus: 3
-  Attributes:
-    STR: "8\t(-1)"
-    DEX: "15\t(+2)"
-    CON: "16\t(+3)"
-    INT: "14\t(+2)"
-    WIS: "20\t(+6)"
-    CHA: "13\t(+1)"
-  Saving Throws: ""  # TODO: add
-  Skills: ""  # TODO: add
-  HP:
-    Maximum: 61
-    Current: 29
-    Temporary: 0
-    Death Saves: "0/0"  # Successes/Failures
-  Attacks: [
-    {name: Sickle, att: "+2", dam: "1d4-1 Sla", range: "Melee", notes: ""},
-    {name: Quarterstaff, att: "+4", dam: "1d6(1d8)+1 Blu", range: "Melee", notes: ""},
-    {name: Shillelagh, att: "+10", dam: "1d10+7 Blu/For", range: "Melee", notes: ""},
-    {name: Thorn Whip, att: "+8", dam: "2d6 Pie", range: "30 ft", notes: "Melee spell attack. On hit pull Large or smaller creature up to 10 ft closer"},
-    {name: Cure Wounds, att: "", dam: "2d8+5", range: "Touch", notes: "Upcast: +2d8 HP per spell slot level above 1"},
-    {name: Starry Wisp, att: "+8", dam: "2d8 Rad", range: "60 ft", notes: "Ranged spell attack. On hit target emits Dim Light until next turn"},
-    {name: Ice Knife, att: "+8", dam: "1d10 Pie", range: "60 ft", notes: "Ranged spell attack. Hit/miss, Dex save all creatures within 5 ft: 2d6 Col on fail"}
-  ]
-  Spell Slots:
-    Level 1: "0/4"  # Used/Total
-    Level 2: "0/3"
-    Level 3: "0/2"
-  Spells:
-    - Starry Wisp
-    - Cure Wounds
-    - Moon Beam
----
+Name: "Geoffrey of the Undergrowth"
+Level: "5"
+Class: "Druid"
+Subclass: "Circle of the Moon"
+Background: "Farmer"
+Species: "Elf"
+Subspecies: "Wood Elf"
+Alignment: "Lawful Neutral"
+Size: "Medium"
+AC: "16 (WS: greater of beast's or 18)"
+Initiative: "+2"
+Speed: "35 ft"
+Proficiency Bonus: "3"
+Attributes:
+  STR: "8\t(-1)"
+  DEX: "15\t(+2)"
+  CON: "16\t(+3)"
+  INT: "14\t(+2)"
+  WIS: "20\t(+6)"
+  CHA: "13\t(+1)"
+Saving Throws: ""  # TODO: add
+Skills: ""  # TODO: add
+HP:
+  Maximum HP: "61"
+  Current HP: "0"
+  Temporary HP: "0"
+  Death Saves: "0/0"  # Successes/Failures
+Attacks: [
+  {name: Sickle, att: "+2", dam: "1d4-1 Sla", range: "Melee", notes: ""},
+  {name: Quarterstaff, att: "+4", dam: "1d6(1d8)+1 Blu", range: "Melee", notes: ""},
+  {name: Shillelagh, att: "+10", dam: "1d10+7 Blu/For", range: "Melee", notes: ""},
+  {name: Thorn Whip, att: "+8", dam: "2d6 Pie", range: "30 ft", notes: "Melee spell attack. On hit pull Large or smaller creature up to 10 ft closer"},
+  {name: Cure Wounds, att: "", dam: "2d8+5", range: "Touch", notes: "Upcast: +2d8 HP per spell slot level above 1"},
+  {name: Starry Wisp, att: "+8", dam: "2d8 Rad", range: "60 ft", notes: "Ranged spell attack. On hit target emits Dim Light until next turn"},
+  {name: Ice Knife, att: "+8", dam: "1d10 Pie", range: "60 ft", notes: "Ranged spell attack. Hit/miss, Dex save all creatures within 5 ft: 2d6 Col on fail"}
+]
+Spell Slots:
+  Level 1: "0/4"  # Used/Total
+  Level 2: "0/3"
+  Level 3: "0/2"
+Spells:
+  Starry Wisp
+  Cure Wounds
+  Moon Beam
+...
