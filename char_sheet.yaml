@@ -50,4 +50,8 @@ Spells:
   Starry Wisp
   Cure Wounds
   Moon Beam
+Abilities: [  # TODO: extend
+  {name: Wild Shape, uses: "0/2", recover_uses: "All on LR", notes: ""},
+  {name: No uses test, uses: "", recover_uses: "", notes: "notes here"}
+]
 ...

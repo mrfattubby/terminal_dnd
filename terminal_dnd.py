@@ -1,7 +1,8 @@
-from yaml import safe_load, safe_dump, YAMLError
+from yaml import safe_load, YAMLError
 
 
-LINE_SEP = 80 * "*"
+TOTAL_WIDTH = 76  # Half of my laptop screen
+LINE_SEP = TOTAL_WIDTH * "*"
 CONFIG_PATH = "char_sheet.yaml"
 EMPTY_CIRCLE = "\u25ef"
 FILLED_CIRCLE = "\u2b24"
@@ -40,6 +41,7 @@ class Character():
         self.attacks = config["Attacks"]
         self.spell_slots = config["Spell Slots"]
         self.spells = config["Spells"]  # TODO: Convert spell names into Spell objects
+        self.abilities = config["Abilities"]
 
 
 class State():
@@ -120,7 +122,7 @@ class Spells_State(State):
         print("Spell Slots:")
         for level, slots in self.char.spell_slots.items():
             used, total = [int(x) for x in slots.split("/")]
-            print(f"{level}:\t{used * FILLED_CIRCLE}{(total - used) * EMPTY_CIRCLE}")
+            print(f"{level}:\t{used * FILLED_CIRCLE + (total - used) * EMPTY_CIRCLE}")
         print(LINE_SEP)
 
     def show_help(self, all_states) -> None:
@@ -163,12 +165,12 @@ class Combat_State(State):
         print(LINE_SEP)
         print("Death Saves")
         num_successes, num_failures = [int(x) for x in self.char.death_saves.split("/")]
-        print(f"Successes:\t{num_successes * FILLED_CIRCLE}{(3 - num_successes) * EMPTY_CIRCLE}")
-        print(f"Failures:\t{num_failures * FILLED_CIRCLE}{(3 - num_failures) * EMPTY_CIRCLE}")
+        print(f"Successes:\t{num_successes * FILLED_CIRCLE + (3 - num_successes) * EMPTY_CIRCLE}")
+        print(f"Failures:\t{num_failures * FILLED_CIRCLE + (3 - num_failures) * EMPTY_CIRCLE}")
         print(LINE_SEP)
         print("Saving Throws")
         for save in self.char.saving_throws:
-            print(f"{FILLED_CIRCLE if save["prof"] else EMPTY_CIRCLE} {save["name"]}:\t\t{save["mod"]}\t{save["notes"]}")
+            print(f"{FILLED_CIRCLE if save["prof"] else EMPTY_CIRCLE}  {save["name"]}:\t\t{save["mod"]}\t{save["notes"]}")  # Two spaces after circle to align with skills due to expertise
         print(LINE_SEP)
         print("Quick Attack Reference")
         print("Name\t\tAtt.\tDamage\t\tRange\tNotes")
@@ -181,6 +183,28 @@ class Combat_State(State):
 
     def modify_hp(self):
         pass
+
+
+class Abilities_State(State):
+    def __init__(self, char: Character, name: str, entry_command: str, allowed_states: list[str], help_message: str) -> None:
+        super().__init__(char, name, entry_command, allowed_states, help_message)
+    
+    def show_entry(self):
+        super().show_entry()
+        print(LINE_SEP)
+        print("Name\t\tUses\tRecover Uses\t\tNotes")
+        for ability in self.char.abilities:
+            to_print = f"{ability['name']:<15}\t"
+            if ability["uses"]:
+                try:
+                    used, total = [int(x) for x in ability["uses"].split("/")]
+                    to_print += f"{used * FILLED_CIRCLE + (total - used) * EMPTY_CIRCLE:<7}\t"
+                except TypeError:
+                    to_print += f"{"":<7}\t"
+            else:
+                to_print += f"{"":<7}\t"
+            to_print += f"{ability['recover_uses']:<22}\t{ability['notes']}"  # TODO: Fix Notes wrapping onto new line at start of line: keep wrapping in line with Notes column
+            print(to_print)
 
 
 def yaml_read(yaml_file: str) -> dict:
@@ -240,9 +264,10 @@ def transition_states(allowed_states: list[State], usr_input: str, current_state
 
 def main() -> None:
     my_char = Character(yaml_read(CONFIG_PATH))
-    states = [Main_State(char=my_char, name="main", entry_command="MAI", allowed_states=["spells", "combat"], help_message=""),
-              Spells_State(char=my_char, name="spells", entry_command="SPE", allowed_states=["main", "combat"], help_message=""),
-              Combat_State(char=my_char, name="combat", entry_command="COM", allowed_states=["main", "spells"], help_message="")]
+    states = [Main_State(char=my_char, name="main", entry_command="MAI", allowed_states=["spells", "combat", "abilities"], help_message=""),
+              Spells_State(char=my_char, name="spells", entry_command="SPE", allowed_states=["main", "combat", "abilities"], help_message=""),
+              Combat_State(char=my_char, name="combat", entry_command="COM", allowed_states=["main", "spells", "abilities"], help_message=""),
+              Abilities_State(char=my_char, name="abilities", entry_command="ABI", allowed_states=["main", "spells", "combat"], help_message="")]
 
     # Mainloop
     usr_input = ""
