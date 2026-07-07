@@ -152,6 +152,10 @@ class Combat_State(State):
         print(f"Speed:\t\t{self.char.speed}")
         print(LINE_SEP)
         print("Hit Points")
+        try:
+            print(f"|{int(self.char.current_hp) * "="}{int(self.char.temp_hp) * "+"}{(int(self.char.max_hp) - int(self.char.current_hp)) * "-"}|")
+        except TypeError:
+            print("!!Error printing HP bar, make sure all HP values are integers.")
         print(f"Maximum HP:\t{self.char.max_hp}")
         print(f"Current HP:\t{self.char.current_hp}")
         print(f"Temporary HP:\t{self.char.temp_hp}")
