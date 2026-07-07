@@ -32,6 +32,7 @@ class Character():
         self.speed = config["Speed"]
         self.prof_bonus = config["Proficiency Bonus"]
         self.attributes = config["Attributes"]
+        self.saving_throws = config["Saving Throws"]
         self.max_hp = config["HP"]["Maximum HP"]
         self.current_hp = config["HP"]["Current HP"]
         self.temp_hp = config["HP"]["Temporary HP"]
@@ -164,6 +165,10 @@ class Combat_State(State):
         num_successes, num_failures = [int(x) for x in self.char.death_saves.split("/")]
         print(f"Successes:\t{num_successes * FILLED_CIRCLE}{(3 - num_successes) * EMPTY_CIRCLE}")
         print(f"Failures:\t{num_failures * FILLED_CIRCLE}{(3 - num_failures) * EMPTY_CIRCLE}")
+        print(LINE_SEP)
+        print("Saving Throws")
+        for save in self.char.saving_throws:
+            print(f"{FILLED_CIRCLE if save["prof"] else EMPTY_CIRCLE} {save["name"]}:\t\t{save["mod"]}\t{save["notes"]}")
         print(LINE_SEP)
         print("Quick Attack Reference")
         print("Name\t\tAtt.\tDamage\t\tRange\tNotes")

@@ -19,7 +19,14 @@ Attributes:
   INT: "14\t(+2)"
   WIS: "20\t(+6)"
   CHA: "13\t(+1)"
-Saving Throws: ""  # TODO: add
+Saving Throws: [ # TODO: correct these
+  {name: STR, prof: False, mod: "-1", notes: ""},
+  {name: DEX, prof: False, mod: "+2", notes: ""},
+  {name: CON, prof: False, mod: "+3", notes: "Adv. to maintain Concentration"},
+  {name: INT, prof: False, mod: "+2", notes: ""},
+  {name: WIS, prof: True, mod: "+6", notes: ""},
+  {name: CHA, prof: False, mod: "+1", notes: "Adv. vs. Charmed condition"},
+]
 Skills: ""  # TODO: add
 HP:
   Maximum HP: "61"
