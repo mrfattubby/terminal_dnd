@@ -30,9 +30,10 @@ Saving Throws: [ # TODO: correct these
 Skills: ""  # TODO: add
 HP:
   Maximum HP: "61"
-  Current HP: "0"
+  Current HP: "29"
   Temporary HP: "0"
   Death Saves: "0/0"  # Successes/Failures
+  Hit Dice: "0/5 d8"  # Used/Total
 Attacks: [
   {name: Sickle, att: "+2", dam: "1d4-1 Sla", range: "Melee", notes: ""},
   {name: Quarterstaff, att: "+4", dam: "1d6(1d8)+1 Blu", range: "Melee", notes: ""},
@@ -52,6 +53,7 @@ Spells:
   Moon Beam
 Abilities: [  # TODO: extend
   {name: Wild Shape, uses: "0/2", recover_uses: "All on LR", notes: ""},
+  {name: Bad uses test, uses: "0/2 jeff", recover_uses: "1 on SR / all on LR", notes: ""},
   {name: No uses test, uses: "", recover_uses: "", notes: "notes here"}
 ]
 ...

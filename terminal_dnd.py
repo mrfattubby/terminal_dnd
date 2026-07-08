@@ -38,6 +38,7 @@ class Character():
         self.current_hp = config["HP"]["Current HP"]
         self.temp_hp = config["HP"]["Temporary HP"]
         self.death_saves = config["HP"]["Death Saves"]
+        self.hit_dice = config["HP"]["Hit Dice"]
         self.attacks = config["Attacks"]
         self.spell_slots = config["Spell Slots"]
         self.spells = config["Spells"]  # TODO: Convert spell names into Spell objects
@@ -56,6 +57,7 @@ class State():
     def show_entry(self) -> None:
         print(LINE_SEP)
         print(f"{self.name.title()} Screen")
+        print(LINE_SEP)
 
     def show_help(self, all_states: list) -> None:
         print(LINE_SEP)
@@ -86,7 +88,6 @@ class Main_State(State):
 
     def show_entry(self) -> None:
         super().show_entry()
-        print(LINE_SEP)
         print(f"{self.char.name}")
         print(f"Level:\t\t{self.char.level}")
         print(f"Class:\t\t{self.char.char_class} - {self.char.subclass}")
@@ -118,11 +119,7 @@ class Spells_State(State):
 
     def show_entry(self) -> None:
         super().show_entry()
-        print(LINE_SEP)
-        print("Spell Slots:")
-        for level, slots in self.char.spell_slots.items():
-            used, total = [int(x) for x in slots.split("/")]
-            print(f"{level}:\t{used * FILLED_CIRCLE + (total - used) * EMPTY_CIRCLE}")
+        print_spell_slots(self.char)
         print(LINE_SEP)
 
     def show_help(self, all_states) -> None:
@@ -149,19 +146,11 @@ class Combat_State(State):
 
     def show_entry(self) -> None:
         super().show_entry()
-        print(LINE_SEP)
         print(f"AC:\t\t{self.char.ac}")
         print(f"Initiative:\t{self.char.initiative}")
         print(f"Speed:\t\t{self.char.speed}")
         print(LINE_SEP)
-        print("Hit Points")
-        try:
-            print(f"|{int(self.char.current_hp) * "="}{int(self.char.temp_hp) * "+"}{(int(self.char.max_hp) - int(self.char.current_hp)) * "-"}|")
-        except TypeError:
-            print("!!Error printing HP bar, make sure all HP values are integers.")
-        print(f"Maximum HP:\t{self.char.max_hp}")
-        print(f"Current HP:\t{self.char.current_hp}")
-        print(f"Temporary HP:\t{self.char.temp_hp}")
+        print_hp(self.char)
         print(LINE_SEP)
         print("Death Saves")
         num_successes, num_failures = [int(x) for x in self.char.death_saves.split("/")]
@@ -191,21 +180,66 @@ class Abilities_State(State):
     
     def show_entry(self):
         super().show_entry()
-        print(LINE_SEP)
         print("Name\t\tUses\tRecover Uses\t\tNotes")
         for ability in self.char.abilities:
-            to_print = f"{ability['name']:<15}\t"
-            if ability["uses"]:
-                try:
-                    used, total = [int(x) for x in ability["uses"].split("/")]
-                    to_print += f"{used * FILLED_CIRCLE + (total - used) * EMPTY_CIRCLE:<7}\t"
-                except TypeError:
-                    to_print += f"{"":<7}\t"
-            else:
-                to_print += f"{"":<7}\t"
-            to_print += f"{ability['recover_uses']:<22}\t{ability['notes']}"  # TODO: Fix Notes wrapping onto new line at start of line: keep wrapping in line with Notes column
-            print(to_print)
+            print(f"{helper_print_ability_uses(ability)}\t{ability['notes']}")  # TODO: Fix Notes wrapping onto new line at start of line: keep wrapping in line with Notes column
+        print(LINE_SEP)
 
+
+class Rest_State(State):
+    def __init__(self, char: Character, name: str, entry_command: str, allowed_states: list[str], help_message: str) -> None:
+        super().__init__(char, name, entry_command, allowed_states, help_message)
+    
+    def show_entry(self):
+        super().show_entry()
+        print_hp(self.char)
+        try:
+            num, die = self.char.hit_dice.split(" ")
+            used, total = [int(x) for x in num.split("/")]
+            to_print = f"{used * FILLED_CIRCLE + (total - used) * EMPTY_CIRCLE:<7}\t{die}"
+        except (TypeError, ValueError) as e:
+            to_print = f"!!{num:<5}\t{die}"  # Cut off at 5 since we add two exclamation marks (total of 7 chars)
+        print(f"Hit Dice:\t{to_print}")
+        print(LINE_SEP)
+        print_spell_slots(self.char)
+        print(LINE_SEP)
+        print("Abilities")
+        print("Name\t\tUses\tRecover Uses")
+        for ability in self.char.abilities:
+            if "SR" in ability["recover_uses"] or "LR" in ability["recover_uses"]:
+                print(f"{helper_print_ability_uses(ability)}\t{ability['notes']}")  # TODO: Fix Notes wrapping onto new line at start of line: keep wrapping in line with Notes column
+        print(LINE_SEP)
+
+
+def print_hp(char: Character) -> None:
+    print("Hit Points")
+    try:
+        print(f"|{int(char.current_hp) * "="}{int(char.temp_hp) * "+"}{(int(char.max_hp) - int(char.current_hp)) * "-"}|")
+    except (TypeError, ValueError) as e:
+        print("!!Error printing HP bar, make sure all HP values are integers.")
+    print(f"Maximum HP:\t{char.max_hp}")
+    print(f"Current HP:\t{char.current_hp}")
+    print(f"Temporary HP:\t{char.temp_hp}")
+
+
+def print_spell_slots(char: Character) -> None:
+    print("Spell Slots:")
+    for level, slots in char.spell_slots.items():
+        used, total = [int(x) for x in slots.split("/")]
+        print(f"{level}:\t{used * FILLED_CIRCLE + (total - used) * EMPTY_CIRCLE}")
+
+
+def helper_print_ability_uses(ability: dict) -> str:
+    to_print = f"{ability['name']:<15}\t"
+    if ability["uses"]:
+        try:
+            used, total = [int(x) for x in ability["uses"].split("/")]
+            to_print += f"{used * FILLED_CIRCLE + (total - used) * EMPTY_CIRCLE:<7}\t"
+        except (TypeError, ValueError) as e:
+            to_print += f"!!{ability["uses"][:5]:<5}\t"  # Cut off at 5 since we add two exclamation marks (total of 7 chars)
+    else:
+        to_print += f"{"":<7}\t"
+    return to_print + f"{ability['recover_uses']:<22}"
 
 def yaml_read(yaml_file: str) -> dict:
     """Safely read data from a .yaml file.
@@ -264,10 +298,11 @@ def transition_states(allowed_states: list[State], usr_input: str, current_state
 
 def main() -> None:
     my_char = Character(yaml_read(CONFIG_PATH))
-    states = [Main_State(char=my_char, name="main", entry_command="MAI", allowed_states=["spells", "combat", "abilities"], help_message=""),
-              Spells_State(char=my_char, name="spells", entry_command="SPE", allowed_states=["main", "combat", "abilities"], help_message=""),
-              Combat_State(char=my_char, name="combat", entry_command="COM", allowed_states=["main", "spells", "abilities"], help_message=""),
-              Abilities_State(char=my_char, name="abilities", entry_command="ABI", allowed_states=["main", "spells", "combat"], help_message="")]
+    states = [Main_State(char=my_char, name="main", entry_command="MAI", allowed_states=["spells", "combat", "abilities", "rest"], help_message=""),
+              Spells_State(char=my_char, name="spells", entry_command="SPE", allowed_states=["main", "combat", "abilities", "rest"], help_message=""),
+              Combat_State(char=my_char, name="combat", entry_command="COM", allowed_states=["main", "spells", "abilities", "rest"], help_message=""),
+              Abilities_State(char=my_char, name="abilities", entry_command="ABI", allowed_states=["main", "spells", "combat", "rest"], help_message=""),
+              Rest_State(char=my_char, name="rest", entry_command="RES", allowed_states=["main", "spells", "combat", "abilities"], help_message="")]
 
     # Mainloop
     usr_input = ""
