@@ -34,6 +34,7 @@ class Character():
         self.prof_bonus = config["Proficiency Bonus"]
         self.attributes = config["Attributes"]
         self.saving_throws = config["Saving Throws"]
+        self.skills = config["Skills"]
         self.max_hp = config["HP"]["Maximum HP"]
         self.current_hp = config["HP"]["Current HP"]
         self.temp_hp = config["HP"]["Temporary HP"]
@@ -96,12 +97,12 @@ class Main_State(State):
         print(f"Alignment:\t{self.char.alignment}")
         print(LINE_SEP)
         print("Attributes:")
-        print(f"STR:\t\t{self.char.attributes['STR']}")
-        print(f"DEX:\t\t{self.char.attributes['DEX']}")
-        print(f"CON:\t\t{self.char.attributes['CON']}")
-        print(f"INT:\t\t{self.char.attributes['INT']}")
-        print(f"WIS:\t\t{self.char.attributes['WIS']}")
-        print(f"CHA:\t\t{self.char.attributes['CHA']}")
+        for attribute in self.char.attributes:
+            print(f"   {attribute["name"]}\t\t{attribute["mod"]:>2}\t({attribute["val"]:>2})\t{attribute["notes"]}")  # 3 space offset to line up with saving throws and skills
+        print(LINE_SEP)
+        print("Skills:")
+        for skill in self.char.skills:
+            print(f"{FILLED_CIRCLE if skill["expert"] else " "}{FILLED_CIRCLE if skill["prof"] else EMPTY_CIRCLE} {skill["name"]:<12}\t{skill["mod"]:>2}\t{skill["attribute"]}\t{skill["notes"]}")
         print(LINE_SEP)
 
     def show_ac(self) -> None:
@@ -159,7 +160,7 @@ class Combat_State(State):
         print(LINE_SEP)
         print("Saving Throws")
         for save in self.char.saving_throws:
-            print(f"{FILLED_CIRCLE if save["prof"] else EMPTY_CIRCLE}  {save["name"]}:\t\t{save["mod"]}\t{save["notes"]}")  # Two spaces after circle to align with skills due to expertise
+            print(f" {FILLED_CIRCLE if save["prof"] else EMPTY_CIRCLE} {save["name"]}\t\t{save["mod"]}\t\t{save["notes"]}")  # Two spaces after circle to align with skills due to expertise
         print(LINE_SEP)
         print("Quick Attack Reference")
         print("Name\t\tAtt.\tDamage\t\tRange\tNotes")

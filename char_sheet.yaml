@@ -12,13 +12,14 @@ AC: "16 (WS: greater of beast's or 18)"
 Initiative: "+2"
 Speed: "35 ft"
 Proficiency Bonus: "3"
-Attributes:
-  STR: "8\t(-1)"
-  DEX: "15\t(+2)"
-  CON: "16\t(+3)"
-  INT: "14\t(+2)"
-  WIS: "20\t(+6)"
-  CHA: "13\t(+1)"
+Attributes: [  # TODO: correct these
+  {name: STR, val: "8", mod: "-1", notes: "test note"},
+  {name: DEX, val: "15", mod: "+2", notes: ""},
+  {name: CON, val: "16", mod: "+3", notes: ""},
+  {name: INT, val: "14", mod: "+2", notes: ""},
+  {name: WIS, val: "20", mod: "+6", notes: ""},
+  {name: CHA, val: "13", mod: "+1", notes: ""},
+]
 Saving Throws: [ # TODO: correct these
   {name: STR, prof: False, mod: "-1", notes: ""},
   {name: DEX, prof: False, mod: "+2", notes: ""},
@@ -27,7 +28,11 @@ Saving Throws: [ # TODO: correct these
   {name: WIS, prof: True, mod: "+6", notes: ""},
   {name: CHA, prof: False, mod: "+1", notes: "Adv. vs. Charmed condition"},
 ]
-Skills: ""  # TODO: add
+Skills: [  # TODO: correct these
+  {name: Acrobatics, attribute: DEX, prof: False, expert: False, mod: "+2", notes: ""},
+  {name: Athletics, attribute: STR, prof: False, expert: False, mod: "-1", notes: "test note"},
+  {name: Animal Hand., attribute: WIS, prof: True, expert: True, mod: "+11", notes: ""}
+]
 HP:
   Maximum HP: "61"
   Current HP: "29"
