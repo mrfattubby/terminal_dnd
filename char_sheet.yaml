@@ -53,10 +53,12 @@ Spell Slots:
   Level 2: "0/3"
   Level 3: "0/2"
 Spells: [
-  {name: Starry Wisp, level: "0", prepared: True, materials: "", concentration: False, notes: "WS"},
-  {name: Cure Wounds, level: "1", prepared: True, materials: "V,S", concentration: False, notes: "WS"},
-  {name: Longstrider, level: "1", prepared: True, materials: "V", concentration: False, notes: "1 free use per LR"},  # TODO: implement counter for free uses?
-  {name: Moon Beam, level: "2", prepared: True, materials: "V,S,M", concentration: True, notes: "WS"}
+  {name: Starry Wisp, level: "0", prepared: True, materials: "", concentration: False, ritual: False, notes: "WS"},
+  {name: Cure Wounds, level: "1", prepared: True, materials: "V,S", concentration: False, ritual: False, notes: "WS"},
+  {name: Longstrider, level: "1", prepared: True, materials: "V", concentration: False, ritual: False, notes: "1 free use per LR"},  # TODO: implement counter for free uses?
+  {name: Speak with Animals, level: "1", prepared: True, materials: "V,M", concentration: False, ritual: True, notes: ""},
+  {name: Moon Beam, level: "2", prepared: True, materials: "V,S,M", concentration: True, ritual: False, notes: "WS"},
+  {name: C + R test, level: "3", prepared: True, materials: "V,S,M", concentration: True, ritual: True, notes: "test"}
 ]
 Abilities: [  # TODO: extend
   {name: Wild Shape, uses: "0/2", recover_uses: "All on LR", notes: ""},

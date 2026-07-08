@@ -136,7 +136,7 @@ class Spells_State(State):
             print(f"{level}:")
             for spell in self.char.spells:
                 if spell["level"] == level[-1]:
-                    print(f" {FILLED_CIRCLE if spell["prepared"] else EMPTY_CIRCLE} {spell["name"]}\t{spell["materials"]:>5}\t{"C" if spell["concentration"] else ""}\t{spell["notes"]}")  # TODO: Add materials, WS, notes, etc.
+                    print(f" {FILLED_CIRCLE if spell["prepared"] else EMPTY_CIRCLE} {spell["name"]:<20}\t{spell["materials"]:<5}\t{"C  " if spell["concentration"] else "   "} {"R" if spell["ritual"] else ""}\t{spell["notes"]}")  # TODO: Add materials, WS, notes, etc.
         print(LINE_SEP)
 
     def cast_spell(self) -> None:
