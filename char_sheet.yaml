@@ -52,10 +52,12 @@ Spell Slots:
   Level 1: "0/4"  # Used/Total
   Level 2: "0/3"
   Level 3: "0/2"
-Spells:
-  Starry Wisp
-  Cure Wounds
-  Moon Beam
+Spells: [
+  {name: Starry Wisp, level: "0", prepared: True, materials: "", concentration: False, notes: "WS"},
+  {name: Cure Wounds, level: "1", prepared: True, materials: "V,S", concentration: False, notes: "WS"},
+  {name: Longstrider, level: "1", prepared: True, materials: "V", concentration: False, notes: "1 free use per LR"},  # TODO: implement counter for free uses?
+  {name: Moon Beam, level: "2", prepared: True, materials: "V,S,M", concentration: True, notes: "WS"}
+]
 Abilities: [  # TODO: extend
   {name: Wild Shape, uses: "0/2", recover_uses: "All on LR", notes: ""},
   {name: Bad uses test, uses: "0/2 jeff", recover_uses: "1 on SR / all on LR", notes: ""},

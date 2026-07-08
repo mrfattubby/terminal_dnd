@@ -127,10 +127,17 @@ class Spells_State(State):
         super().show_help(all_states)
 
     def show_spells(self) -> None:
-        print("All spells:")
+        print(LINE_SEP)
+        print("All spells")
+        print(LINE_SEP)
         # TODO: Flesh this out for Spell objects
-        for spell in self.char.spells:
-            print(f"\t{spell}")
+        levels = ["Level 0"] + list(self.char.spell_slots.keys())
+        for level in levels:
+            print(f"{level}:")
+            for spell in self.char.spells:
+                if spell["level"] == level[-1]:
+                    print(f" {FILLED_CIRCLE if spell["prepared"] else EMPTY_CIRCLE} {spell["name"]}\t{spell["materials"]:>5}\t{"C" if spell["concentration"] else ""}\t{spell["notes"]}")  # TODO: Add materials, WS, notes, etc.
+        print(LINE_SEP)
 
     def cast_spell(self) -> None:
         # TODO: Implement
